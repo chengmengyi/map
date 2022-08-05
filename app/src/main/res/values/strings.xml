@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">map</string>
-    <string name="admob_id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="admob_id">ca-app-pub-8933525717079761~8379023940</string>
+    <string name="facebook_app_id">729805808282522</string>
 </resources>
