@@ -32,14 +32,15 @@ object ServerConnectCallback: ShadowsocksConnection.Callback{
         updateState(BaseService.State.Connecting)
         GlobalScope.launch {
             if (currentServer.isFastServer()){
-                val bean = ServerManager.getServerList().randomOrNull()
+                val bean = ServerManager.getFastServer()
                 if (null!=bean){
                     DataStore.profileId = bean.getServerId()
+                    Core.startService()
                 }
             }else{
                 DataStore.profileId = currentServer.getServerId()
+                Core.startService()
             }
-            Core.startService()
         }
     }
 

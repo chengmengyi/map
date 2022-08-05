@@ -7,10 +7,15 @@ import android.os.Bundle
 import com.blankj.utilcode.util.ActivityUtils
 import com.demo.map.ac.HomeActivity
 import com.demo.map.ac.MainActivity
+import com.demo.map.admob.LoadAdManager
+import com.demo.map.event.EventBean
+import com.demo.map.event.EventCode
+import com.google.android.gms.ads.AdActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.EventBus
 
 object ActivityLifecycleCallback {
     var isFront=true
@@ -29,6 +34,8 @@ object ActivityLifecycleCallback {
                 if (num==1){
                     isFront=true
                     if (reload){
+                        EventBean(EventCode.REFRESH_NATIVE_AD).send()
+                        printMap("==reload==")
                         if (ActivityUtils.isActivityExistsInStack(HomeActivity::class.java)){
                             activity.startActivity(Intent(activity, MainActivity::class.java))
                         }
@@ -48,7 +55,9 @@ object ActivityLifecycleCallback {
                     job= GlobalScope.launch {
                         delay(3000L)
                         reload=true
+                        LoadAdManager.isShowingFullAd=false
                         ActivityUtils.finishActivity(MainActivity::class.java)
+                        ActivityUtils.finishActivity(AdActivity::class.java)
                     }
                 }
             }

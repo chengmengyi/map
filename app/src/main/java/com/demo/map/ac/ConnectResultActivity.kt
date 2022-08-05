@@ -1,6 +1,8 @@
 package com.demo.map.ac
 
 import com.demo.map.R
+import com.demo.map.admob.AdType
+import com.demo.map.admob.ShowNativeAd
 import com.demo.map.base.BaseActivity
 import com.demo.map.ext.getSquareFlagByServer
 import com.demo.map.ext.transTime
@@ -10,6 +12,7 @@ import kotlinx.coroutines.*
 
 class ConnectResultActivity :BaseActivity(){
     private var connectTimeJob: Job?=null
+    private val showResultNativeAdManager by lazy { ShowNativeAd(this, AdType.TYPE_RESULT) }
 
     override fun layoutId(): Int = R.layout.layout_connect_result
 
@@ -44,9 +47,17 @@ class ConnectResultActivity :BaseActivity(){
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (refreshNativeAd){
+            showResultNativeAdManager.loopGetNativeAd()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         connectTimeJob?.cancel()
         connectTimeJob=null
+        showResultNativeAdManager.onDestroy()
     }
 }

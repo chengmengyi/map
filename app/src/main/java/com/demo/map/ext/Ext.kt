@@ -4,13 +4,21 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.demo.map.BuildConfig
 import com.demo.map.R
 import com.demo.map.server.ServerBean
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+
+fun printMap(string: String){
+    if (BuildConfig.DEBUG){
+        Log.e("qwer",string)
+    }
+}
 
 fun View.show(show:Boolean){
     visibility=if (show) View.VISIBLE else View.GONE

@@ -14,7 +14,8 @@
         android:theme="@style/Theme.Map">
         <activity
             android:name=".ac.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,10 +23,19 @@
             </intent-filter>
         </activity>
         <activity android:name=".ac.HomeActivity"
-            android:launchMode="singleTask"/>
-        <activity android:name=".ac.ChooseServerActivity" />
-        <activity android:name=".ac.ConnectResultActivity" />
-        <activity android:name=".ac.WebActivity" />
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".ac.ChooseServerActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ac.ConnectResultActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ac.WebActivity"
+            android:screenOrientation="portrait"/>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/admob_id" />
     </application>
 
 </manifest>

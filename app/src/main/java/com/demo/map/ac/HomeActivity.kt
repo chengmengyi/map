@@ -8,6 +8,10 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.demo.map.R
+import com.demo.map.admob.AdType
+import com.demo.map.admob.LoadAdManager
+import com.demo.map.admob.ShowFullAd
+import com.demo.map.admob.ShowNativeAd
 import com.demo.map.base.BaseActivity
 import com.demo.map.event.EventBean
 import com.demo.map.event.EventCode
@@ -29,6 +33,9 @@ class HomeActivity:BaseActivity(), IServerConnectedInterface {
 
     private var connectTime=0L
     private var connectTimeJob:Job?=null
+
+    private val showConnectAdManager by lazy { ShowFullAd(this,AdType.TYPE_CONNECT) }
+    private val showHomeNativeAdManager by lazy { ShowNativeAd(this,AdType.TYPE_HOME) }
 
     private val launcher = registerForActivityResult(StartService()) {
         if (!it && hasPermission) {
@@ -89,6 +96,8 @@ class HomeActivity:BaseActivity(), IServerConnectedInterface {
 
     private fun callConnect(isConnected:Boolean=ServerConnectCallback.isConnected()){
         canClick=false
+        LoadAdManager.loadAd(AdType.TYPE_CONNECT)
+        LoadAdManager.loadAd(AdType.TYPE_RESULT)
         if (isConnected){
             ServerConnectCallback.disConnect()
             updateUI(BaseService.State.Stopping)
@@ -131,9 +140,11 @@ class HomeActivity:BaseActivity(), IServerConnectedInterface {
                 delay(1000L)
                 if (time in 2..10) {
                     val success = if (isConnect) ServerConnectCallback.isConnected() else ServerConnectCallback.isStopped()
-                    if (success) {
-                        checkConnectResult(isConnect)
+                    if (success&&showConnectAdManager.getHasAd()) {
                         cancel()
+                        showConnectAdManager.showFullAd {
+                            checkConnectResult(isConnect)
+                        }
                     }
                 } else if (time>10){
                     checkConnectResult(isConnect)
@@ -268,7 +279,17 @@ class HomeActivity:BaseActivity(), IServerConnectedInterface {
 
     override fun connectState(state: BaseService.State) {
         when(state){
-            BaseService.State.Connected->updateConnectedUI()
+            BaseService.State.Connected->{
+                updateConnectedUI()
+                updateCurrentServerInfo()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (refreshNativeAd){
+            showHomeNativeAdManager.loopGetNativeAd()
         }
     }
 
@@ -278,5 +299,6 @@ class HomeActivity:BaseActivity(), IServerConnectedInterface {
         ServerConnectCallback.onDestroy()
         stopConnectBtnAnimator()
         stopCountConnectTime()
+        showHomeNativeAdManager.onDestroy()
     }
 }

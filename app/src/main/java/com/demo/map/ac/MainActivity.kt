@@ -7,24 +7,42 @@ import android.view.animation.LinearInterpolator
 import androidx.core.animation.doOnEnd
 import com.blankj.utilcode.util.ActivityUtils
 import com.demo.map.R
+import com.demo.map.admob.AdType
+import com.demo.map.admob.LoadAdManager
+import com.demo.map.admob.ShowFullAd
 import com.demo.map.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
     private var valueAnimator:ValueAnimator?=null
+    private val showOpenAdManager by lazy { ShowFullAd(this,AdType.TYPE_OPEN) }
 
     override fun layoutId(): Int = R.layout.activity_main
 
     override fun onView() {
+        LoadAdManager.loadAd(AdType.TYPE_OPEN)
+        LoadAdManager.loadAd(AdType.TYPE_CONNECT)
+        LoadAdManager.loadAd(AdType.TYPE_HOME)
+        LoadAdManager.loadAd(AdType.TYPE_RESULT)
+
         valueAnimator = ValueAnimator.ofInt(0, 100).apply {
-            duration=2000L
+            duration=10000L
             interpolator = LinearInterpolator()
             addUpdateListener {
                 val pro = it.animatedValue as Int
                 progress_bar.progress = pro
-            }
-            doOnEnd {
-                startHome()
+                val duration = (10 * (pro / 100.0F)).toInt()
+                if (duration in 2..9){
+                    if (showOpenAdManager.getHasAd()){
+                        valueAnimator?.removeAllUpdateListeners()
+                        valueAnimator?.cancel()
+                        showOpenAdManager.showFullAd{
+                            startHome()
+                        }
+                    }
+                }else if (duration>=10){
+                    startHome()
+                }
             }
             start()
         }

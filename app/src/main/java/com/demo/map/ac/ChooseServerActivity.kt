@@ -4,6 +4,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.demo.map.R
 import com.demo.map.adapter.ChooseServerAdapter
+import com.demo.map.admob.AdType
+import com.demo.map.admob.LoadAdManager
+import com.demo.map.admob.ShowFullAd
 import com.demo.map.base.BaseActivity
 import com.demo.map.event.EventBean
 import com.demo.map.event.EventCode
@@ -12,10 +15,13 @@ import com.demo.map.server.ServerConnectCallback
 import kotlinx.android.synthetic.main.layout_choose_server.*
 
 class ChooseServerActivity:BaseActivity() {
+    private val showBackAdHelper by lazy { ShowFullAd(this,AdType.TYPE_BACK) }
+
     override fun layoutId(): Int = R.layout.layout_choose_server
 
     override fun onView() {
         immersionBar?.statusBarView(top_view)?.init()
+        LoadAdManager.loadAd(AdType.TYPE_BACK)
 
         recycler_view.apply {
             layoutManager=LinearLayoutManager(this@ChooseServerActivity)
@@ -24,7 +30,7 @@ class ChooseServerActivity:BaseActivity() {
             }
         }
 
-        iv_back.setOnClickListener { finish() }
+        iv_back.setOnClickListener { onBackPressed() }
     }
 
     private fun onClickItem(serverBean: ServerBean){
@@ -55,6 +61,16 @@ class ChooseServerActivity:BaseActivity() {
     private fun sendMsg(result:String,serverBean: ServerBean){
         ServerConnectCallback.updateCurrentServer(serverBean)
         EventBean(EventCode.CHOOSE_SERVER_BACK,str = result,serverBean = serverBean).send()
+        finish()
+    }
+
+    override fun onBackPressed() {
+        if (showBackAdHelper.getHasAd()){
+            showBackAdHelper.showFullAd{
+                finish()
+            }
+            return
+        }
         finish()
     }
 }

@@ -12,6 +12,7 @@ import org.greenrobot.eventbus.Subscribe
 
 abstract class BaseActivity:AppCompatActivity() {
     private var resume=false
+    var refreshNativeAd=true
     protected var immersionBar:ImmersionBar?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +20,6 @@ abstract class BaseActivity:AppCompatActivity() {
         density()
         setContentView(layoutId())
         EventBus.getDefault().register(this)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         immersionBar=ImmersionBar.with(this).apply {
             statusBarAlpha(0f)
             autoDarkModeEnable(true)
@@ -62,7 +62,11 @@ abstract class BaseActivity:AppCompatActivity() {
 
     @Subscribe
     fun onEvent(bean: EventBean) {
-        onEventOtherMsg(bean)
+        if (bean.code==EventCode.REFRESH_NATIVE_AD){
+            refreshNativeAd=true
+        }else{
+            onEventOtherMsg(bean)
+        }
     }
 
     protected open fun onEventOtherMsg(bean: EventBean){}
