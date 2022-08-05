@@ -1,4 +1,4 @@
-package com.demo.map
+package com.map.unlimited.easy.tool
 
 import org.junit.Test
 
